@@ -1,0 +1,31 @@
+{
+  "name": "2026_DUW_Analytics_DiracX",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "slidev build --download",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fstagni/2026_DUW_Analytics_DiracX.git"
+  },
+  "keywords": [
+    "diracx",
+    "DUW12",
+    "analytics"
+  ],
+  "author": "Federico Stagni",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/fstagni/2026_DUW_Analytics_DiracX/issues"
+  },
+  "homepage": "https://github.com/fstagni/2026_DUW_Analytics_DiracX#readme",
+  "description": "",
+  "dependencies": {
+    "slidev-theme-neversink": "^0.4.0"
+  },
+  "devDependencies": {
+    "@slidev/cli": "^52.9.1"
+  }
+}

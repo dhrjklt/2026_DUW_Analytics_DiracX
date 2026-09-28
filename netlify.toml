@@ -1,0 +1,11 @@
+[build]
+publish = 'dist'
+command = 'npm install unplugin-icons @iconify-json/logos @iconify-json/devicon @iconify-json/devicon-plain @slidev/cli @slidev/theme-default slidev-theme-neversink playwright-chromium && npm run build'
+
+[build.environment]
+NODE_VERSION = '20'
+
+[[redirects]]
+from = '/*'
+to = '/index.html'
+status = 200

@@ -1,0 +1,7 @@
+# Slidev
+node_modules/
+dist/
+.slidev/
+
+# LibreOffice lock files
+.~lock.*#
