@@ -264,6 +264,71 @@ DX-ADR-009 counters (e.g., TransformationCounters, DataParcelsCounters) provide 
 </AdmonitionType>
 
 ---
+layout: section
+color: diracx-green
+title: bucketing
+---
+
+# Data Bucketing
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: bucketing-strategy
+---
+
+:: title ::
+
+# Data Bucketing Strategy
+
+:: content ::
+
+Raw records are landed as **Parquet** (the source of truth); time-bucketed, pre-aggregated tables are **derived** by DuckDB inside DuckLake.
+
+| Concern | Approach |
+|---------|----------|
+| **Granularity** | Configurable bins (e.g. hour / day / week / month) |
+| **Producers** | Periodic **DiracX task** running a DuckDB job in DuckLake |
+| **Freshness** | Recent data served raw for near real-time; older data from buckets, with on-demand fallback to raw |
+| **Retention** | Raw persisted forever (cold storage); buckets as accelerator |
+| **Compatibility** | Mirrors DIRAC Accounting's existing bucketing model |
+
+<AdmonitionType type='note' >
+Bucket sizes are <strong>open questions</strong> — feedback welcome.
+</AdmonitionType>
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: retention-policy
+---
+
+:: title ::
+
+# Data Retention Policy
+
+:: content ::
+
+Raw is the source of truth and is **persisted forever**; bucketed tables are pre-aggregated **accelerators** kept for query speed.
+
+| Level | Rows | Retention |
+|-------|------|-----------|
+| **Raw** (per record) | largest | **forever** |
+| **Hourly** | 24×/day | 6–12 months |
+| **Daily** | 1×/day | 3–5 years |
+| **Monthly** | 1×/month | 3–5 years |
+
+<AdmonitionType type='important' >
+Missing bucket coverage falls back to <strong>on-demand aggregation over raw</strong> — any granularity, any period, always answerable.
+</AdmonitionType>
+
+<AdmonitionType type='note' >
+Since raw is kept forever, every bucket level is a <strong>prunable cache</strong>; windows are <strong>open questions</strong> — feedback welcome.
+</AdmonitionType>
+
+---
 layout: top-title
 color: diracx-light
 align: cm
