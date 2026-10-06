@@ -26,11 +26,10 @@ download: true
 ---
 layout: section
 color: diracx
-title: Terminology
+title: Terms 
 ---
 
-# Architectural Terminology
-
+# Terminology 
 ---
 layout: top-title
 color: diracx-light
@@ -40,30 +39,96 @@ title: terminology-oltp
 
 :: title ::
 
-# Industry-Standard Terms
+# Terminology: Industry-Standard Terms
 
 :: content ::
 
 **OLTP** – Online Transaction Processing
 - The DBs hosting the business logic of what DIRAC(X) does
-- Examples: JobDB, PilotAgentsDB, and the "type" tables of AccountingDB
+- Examples: JobDB, PilotAgentsDB, but also the "raw" (`type`) tables of AccountingDB
 
 **OLAP** – Online Analytical Processing
-- What DIRAC calls "Accounting" (bucketed tables) and "Monitoring" (*This distinction should really go away*)
 - An **Analytics Platform** is a system designed to collect, store, and analyze large volumes of operational data to support decision-making, reporting, and monitoring.
+- What DIRAC calls "Accounting" and "Monitoring" (*This distinction should really go away*)
 
-**OTEL** – OpenTelemetry
-- What is being added in DiracX with OpenTelemetry
-- What has been added in DIRAC won't be ported, and should probably be discontinued already
+**ELT** - Extract, Load, Transform
+- *Extract* the data (from the OLTP), *Load* it in the OLAP, *Transform* it for consumption later on
+- Also **ETL** (Extract, Transform, Load) exists, but likely won't be interesting to us
 
 
 ---
-layout: section
-color: diracx-green
-title: Scope
+layout: top-title-two-cols
+color: diracx-light
+align: cm-lm-lm
+title: terminology-oltp-2
+columns: is-8
 ---
 
-# Scope & Background
+:: title ::
+
+# Terminology: Industry-Standard Terms/2
+
+:: left ::
+
+**Data Warehouse**
+- Structured, curated data organized for querying and reporting
+- Schema-on-write; optimized for known analytical workloads
+
+**Data Lake**
+- Raw data stored in its native format (files, logs, etc.)
+- Schema-on-read; flexible but requires discipline to stay usable
+
+**Data Lakehouse**
+- Combines lake flexibility with warehouse structure: governed, query-optimized layers on top of raw storage
+- *This is our target architecture*
+
+
+:: right ::
+
+<SpeechBubble color="sky" shape="round" maxWidth="300px" position="l">
+The DIRAC Accounting and Monitoring Systems "resembles" a Data Warehouse
+</SpeechBubble>
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: terminology-oltp-3
+---
+
+:: title ::
+
+# Terminology: Industry-Standard Terms/3
+
+:: content ::
+
+
+**OTEL** – [OpenTelemetry](https://opentelemetry.io)
+- Instrumentation standard for traces, metrics, logs. Also being added in DiracX.
+- This is *not* the main subject of this presentation
+
+<br>
+
+<AdmonitionType type='important' >
+<strong>OLAP vs OTEL</strong><br>
+<br>
+<br>
+<strong>OLAP</strong> answers <em>"how many jobs ran on site X last month?"</em><br>
+(aggregated, historical, business metrics)<br>
+<br>
+<strong>OTEL</strong> answers <em>"why did this specific request fail right now?"</em><br>
+(high-cardinality, real-time, system health)<br>
+<br>
+They serve different purposes and should not be mixed.
+</AdmonitionType>
+
+<br>
+
+<AdmonitionType type='note' >
+The "telemetry" that has been added <a href="https://dirac.diracgrid.org/en/integration/AdministratorGuide/Systems/MonitoringSystem/index.html#monitoring-of-dirac-agents-and-services" class="slidev-link">in DIRAC</a> won't be ported, and should probably be discontinued already.
+</AdmonitionType>
+
 
 ---
 layout: top-title
@@ -78,19 +143,14 @@ title: scope
 
 :: content ::
 
+<div class="flex flex-col items-center justify-center h-full text-center">
+
 This note proposes a **comprehensive approach for creating an OLAP for DiracX**.
 
 Its purpose is to **fully replace** the current DIRAC "Accounting" and "Monitoring" systems.
 
-<br>
-<br>
-<br>
-<br>
-<br>
+</div>
 
-<AdmonitionType type='note' >
-The new analytics should have <strong>all data</strong> of the existing DIRAC accounting. The existing accounting won't have new data types/categories.
-</AdmonitionType>
 
 ---
 layout: top-title
@@ -105,13 +165,15 @@ title: background
 
 :: content ::
 
+
 - Initial considerations: [diracx/discussions/199](https://github.com/DIRACGrid/diracx/discussions/199)
 - Base for [DIRACx/issues/562](https://github.com/DIRACGrid/DIRACx/issues/562)
-- The original plan (heavily relying on OpenSearch) **cannot proceed** due to technical limitations
+- The original plan (heavily relying on OpenSearch) **could not proceed** due to technical limitations
 
 **Related tasks:**
 - [Accounting plots for MP jobs](https://github.com/DIRACGrid/diracx/issues/294) – requirements already collected
 - [Accounting [Jobs]: don't we need the wallclock time?](https://github.com/DIRACGrid/DIRAC/issues/8277) – simple and clear requirements
+
 
 ---
 layout: section
@@ -120,6 +182,27 @@ title: User Stories
 ---
 
 # User Stories
+
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: users
+---
+
+:: title ::
+
+# Users
+
+:: content ::
+
+- Community users
+- Community operators
+- Community administrators
+- Dirac(X) admins
+
 
 ---
 layout: top-title
@@ -134,17 +217,36 @@ title: user-stories
 
 :: content ::
 
-| As a... | I want to... | So that... |
+| **As a...** | **I want to...** | **So that...** |
 |---------|-------------|------------|
-| Community administrator | Create plots outside pre-defined dashboards | – |
+| Community user | Visualize my own usage through dashboards | |
+| Community operator (shifter) | Do real-time community monitoring | I can provide feedback |
+| Community operator (shifter) | Visualize historic data | I can provide community reports |
+| Community administrator | Modify the dashboards definitions | |
 | Community administrator | Explore raw and bucketed data | I can create new visualizations |
-| DiracX admin | Avoid any new external dependency | – |
-| DiracX operator | Do real-time monitoring | – |
-| DiracX operator | Visualize historic data | – |
+| Community administrator | Inject community-specific data in the OLAP | |
 
-<AdmonitionType type='note' >
-<strong>Contribution requested:</strong> These are a few basic, not-too-obvious user stories. More are welcome!
-</AdmonitionType>
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: user-stories
+---
+
+:: title ::
+
+# User Stories
+
+:: content ::
+
+
+The new analytics should have (at a minimum) <strong>all the data</strong> of the existing (legacy) DIRAC accounting.
+
+| **As a...** | **I want to...** | **So that...** |
+|---------|-------------|------------|
+| DiracX admin | Avoid any new external dependency | |
+| DiracX admin | Visualize every community data, and summing them up | I can create plots per-installation |
 
 ---
 layout: section
@@ -152,7 +254,7 @@ color: diracx-green
 title: Architecture
 ---
 
-# High-Level Architecture
+# Architecture and Technology Stack
 
 ---
 layout: top-title
@@ -167,18 +269,12 @@ title: architecture
 
 :: content ::
 
-- Raw data for analytics is **extracted** (and possibly transformed) from the OLTP database (MySQL)
-- Raw (and bucketed) data is loaded into a **columnar DB format**
+- Raw data for analytics is **extracted** from the OLTP sources
+  - In vast majority of the cases this would be MySQL
+  - Other sources can include OpenSearch, but also OpenTelemetry or your system of choice (e.g. an Oracle with data of choice)
+- Raw data is loaded into a **columnar DB format**
 - Data is stored using a **"lakehouse"** organization
 - Visualization using **standard tools**
-
----
-layout: section
-color: diracx
-title: Technology Stack
----
-
-# Technology Stack
 
 ---
 layout: top-title
@@ -189,7 +285,7 @@ title: tech-stack
 
 :: title ::
 
-# Technology Stack
+# Suggested Technology Stack
 
 :: content ::
 
@@ -197,16 +293,8 @@ title: tech-stack
 |------------|------|
 | **[Parquet](https://parquet.apache.org)** | Columnar file format; efficient compression and fast analytical queries |
 | **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
-| **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a PostgreSQL catalog |
 | **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
-
----
-layout: section
-color: diracx-green
-title: Data Ingestion
----
-
-# Extracting & Loading Data
+| **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a PostgreSQL catalog |
 
 ---
 layout: top-title
@@ -262,14 +350,6 @@ DiracX already defines a journalled counter mechanism in **DX-ADR-009**
 <AdmonitionType type='note' >
 DX-ADR-009 counters (e.g., TransformationCounters, DataParcelsCounters) provide pre-aggregated data that can feed directly into analytics dashboards.
 </AdmonitionType>
-
----
-layout: section
-color: diracx-green
-title: bucketing
----
-
-# Data Bucketing
 
 ---
 layout: top-title
@@ -441,14 +521,6 @@ Infinity connects to any HTTP/JSON endpoint, making it a natural fit for our Fas
 </AdmonitionType>
 
 ---
-layout: section
-color: diracx-green
-title: Security
----
-
-# Security Model
-
----
 layout: top-title
 color: diracx-light
 align: cm
@@ -471,14 +543,6 @@ For everyone else:
 <AdmonitionType type='important' >
 Power users need DuckDB installed and can query directly. Standard users go through the API.
 </AdmonitionType>
-
----
-layout: section
-color: diracx
-title: Compute
----
-
-# Where the Computing Happens
 
 ---
 layout: top-title
@@ -639,6 +703,8 @@ title: credits/people
     <div class="grid-item col-span-3">
         Todor Ivanov <i>Notre Dame University (US), CMS</i><br/>
         Henryk Giemza <i>NCBJ (PL), LHCb</i><br/>
+        Christophe Haen <i>CERN, LHCb</i><br/>
+        Alexandre Boyer <i>CERN, LHCb</i><br/>
     </div>
 </div>
 
