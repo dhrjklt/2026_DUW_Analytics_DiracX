@@ -654,7 +654,24 @@ color: diracx-green
 title: Conclusions
 ---
 
-# Summary
+# To conclude
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: rejected
+---
+
+:: title ::
+
+# Rejected ideas
+
+:: content ::
+
+- Use ClickHouse, as it'd be a new service
+- ETL with a real CDC (e.g. from MySQL binlog), too complex, and we do not need milli-second precision
 
 ---
 layout: top-title-two-cols
