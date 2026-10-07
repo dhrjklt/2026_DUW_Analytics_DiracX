@@ -303,6 +303,16 @@ title: tech-stack
 | <span class="i-simple-icons:amazons3 text-xl align-middle inline-block"></span> **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
 | <span class="i-simple-icons:duckdb text-xl align-middle inline-block"></span> **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
 | **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a <span class="i-logos:postgresql text-lg align-middle inline-block"></span> PostgreSQL catalog |
+| <span class="i-logos:grafana text-xl align-middle inline-block"></span> **[Grafana](https://grafana.com)** | Dashboards & visualizations via Infinity plugin |
+
+
+---
+layout: section
+color: diracx-green
+title: ETL 
+---
+
+# Extracting the data (the E in ELT)
 
 ---
 layout: top-title
@@ -358,6 +368,57 @@ DiracX already defines a journalled counter mechanism in **DX-ADR-009**
 <AdmonitionType type='note' >
 DX-ADR-009 counters (e.g., TransformationCounters, DataParcelsCounters) provide pre-aggregated data that can feed directly into analytics dashboards.
 </AdmonitionType>
+
+
+---
+layout: section
+color: diracx-green
+title: ELT-L 
+---
+
+# Loading the data (the L in ELT)
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: ducklake
+---
+
+:: title ::
+
+# DuckLake
+
+:: content ::
+
+A lakehouse format built on SQL – delivers advanced data lake features without traditional lakehouse complexity.
+
+**Key features:**
+
+- **SQL as lakehouse format** – metadata stored in a SQL catalog (PostgreSQL, SQLite, DuckDB). No custom catalog server required
+- **ACID transactions** – concurrent access with full transactional guarantees over multi-table operations
+- **Snapshots & time travel** – query data as of any point in time, without expensive compaction steps
+- **Schema evolution & partitioning** – adapt tables over time without breaking existing queries
+- **Open Parquet storage** – data lives in plain Parquet files on disk or object storage, compatible with Iceberg
+- **Fast queries** – filter pushdown via column statistics, even on large datasets
+
+**Production-ready** (v1.0 released April 2026), MIT-licensed, developed by the DuckDB Foundation.
+
+<AdmonitionType type='important' >
+DuckLake enables a <strong>"multiplayer DuckDB"</strong> experience – multiple instances can read and write the same dataset concurrently, a concurrency model <em>not</em> supported by vanilla DuckDB.
+</AdmonitionType>
+
+
+
+
+---
+layout: section
+color: diracx-green
+title: ELT-T
+---
+
+# Transforming the data (the T in ELT)
 
 ---
 layout: top-title
@@ -416,16 +477,40 @@ Missing bucket coverage falls back to <strong>on-demand aggregation over raw</st
 Since raw is kept forever, every bucket level is a <strong>prunable cache</strong>; windows are <strong>open questions</strong> — feedback welcome.
 </AdmonitionType>
 
+
+---
+layout: section
+color: diracx-green
+title: visualizations 
+---
+
+# Visualizing what is in the ducklake
+
+
 ---
 layout: top-title
 color: diracx-light
 align: cm
-title: visualization-arch
+title: visualization-arch-power
 ---
 
 :: title ::
 
-# Visualization Architecture
+# Visualization Architecture for power users
+
+:: content ::
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: visualization-arch-users
+---
+
+:: title ::
+
+# <span class="i-logos:grafana text-3xl align-middle inline-block"></span> Visualization Architecture for generic users
 
 :: content ::
 
@@ -478,13 +563,14 @@ flowchart LR
 
 </div>
 
+<!--
 <div class="flex justify-center items-center gap-8 mt-4">
   <span class="i-logos:grafana text-3xl"></span>
   <span class="i-simple-icons:duckdb text-3xl"></span>
   <span class="i-simple-icons:amazons3 text-3xl"></span>
   <span class="i-logos:postgresql text-3xl"></span>
-  <span class="i-simple-icons:opentelemetry text-3xl"></span>
 </div>
+-->
 
 ---
 layout: top-title
