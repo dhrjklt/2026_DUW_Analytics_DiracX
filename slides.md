@@ -105,7 +105,7 @@ columns: is-9
 :: left ::
 
 
-**OTEL** – [OpenTelemetry](https://opentelemetry.io)
+**OTEL** – <simple-icons:opentelemetry class="text-lg align-middle inline-block" /> [OpenTelemetry](https://opentelemetry.io)
 - Instrumentation standard for traces, metrics, logs.
   - Also [being added in DiracX](https://github.com/DIRACGrid/diracx/pull/1056)
 - This is *not* the main subject of this presentation
@@ -300,9 +300,9 @@ title: tech-stack
 | Technology | Role |
 |------------|------|
 | **[Parquet](https://parquet.apache.org)** | Columnar file format; efficient compression and fast analytical queries |
-| **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
-| **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
-| **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a PostgreSQL catalog |
+| <simple-icons:amazons3 class="text-xl align-middle inline-block" /> **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
+| <simple-icons:duckdb class="text-xl align-middle inline-block" /> **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
+| **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a <logos:postgresql class="text-lg align-middle inline-block" /> PostgreSQL catalog |
 
 ---
 layout: top-title
@@ -321,9 +321,9 @@ We can always load "old" accounting data by **dump-and-restore**. The real quest
 
 **4 main approaches considered:**
 
-1. **CDC (Change Data Capture)** – e.g., `pymysqlreplication` on MySQL binlog → *considered a burden*
+1. **CDC (Change Data Capture)** – e.g., `pymysqlreplication` on <logos:mysql class="text-lg align-middle inline-block" /> MySQL binlog → *considered a burden*
 2. **Replication stream technologies** – e.g., [sling CLI](https://github.com/slingdata-io/sling-cli) with MySQL + DuckLake connectors
-3. **MySQL triggers** (counters) polled by DiracX tasks
+3. <logos:mysql class="text-lg align-middle inline-block" /> **MySQL triggers** (counters) polled by DiracX tasks
 4. **Incremental queries** (every 1-2 min) → `SELECT * WHERE LastUpdateTime > ?`
 
 <AdmonitionType type='important' >
@@ -479,9 +479,11 @@ flowchart LR
 </div>
 
 <div class="flex justify-center items-center gap-8 mt-4">
-  <img src="/images/grafana.svg" class="h-10" alt="Grafana">
-  <img src="/images/duckdb.svg" class="h-10" alt="DuckDB">
-  <img src="/images/ducklake.svg" class="h-10" alt="DuckLake">
+  <logos:grafana class="text-3xl" />
+  <simple-icons:duckdb class="text-3xl" />
+  <simple-icons:amazons3 class="text-3xl" />
+  <logos:postgresql class="text-3xl" />
+  <simple-icons:opentelemetry class="text-3xl" />
 </div>
 
 ---
@@ -531,15 +533,15 @@ title: frontend-decision
 
 :: content ::
 
-**Grafana + Infinity data source plugin**
+**<logos:grafana class="text-xl align-middle inline-block" /> Grafana + Infinity data source plugin**
 
 Given that we expose a REST API via FastAPI, the [Infinity data source plugin](https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource) is a strong candidate:
 
 | Component | Responsibility |
 | --- | --- |
 | **FastAPI Backend** | Validates user tokens, applies row-level/tenant security, queries DuckLake, returns JSON arrays |
-| **Grafana Infinity** | HTTP client inside Grafana; connects to FastAPI with secure, forwarded OAuth headers |
-| **Grafana Panels** | Uses UQL or JSONata within Infinity to transform JSON into tables, time series, or charts |
+| <logos:grafana class="text-lg align-middle inline-block" /> **Grafana Infinity** | HTTP client inside Grafana; connects to FastAPI with secure, forwarded OAuth headers |
+| <logos:grafana class="text-lg align-middle inline-block" /> **Grafana Panels** | Uses UQL or JSONata within Infinity to transform JSON into tables, time series, or charts |
 
 <AdmonitionType type='note' >
 Infinity connects to any HTTP/JSON endpoint, making it a natural fit for our FastAPI analytics route.
@@ -624,7 +626,7 @@ In pure technology stack terms, DiracX OLAP would **share nothing** with the exi
 
 | **DIRAC Accounting** | **DiracX OLAP** |
 |------------------|-------------|
-| MySQL, OpenSearch | Columnar (Parquet + DuckLake) |
+| <logos:mysql class="text-lg align-middle inline-block" /> MySQL, <logos:opensearch class="text-lg align-middle inline-block" /> OpenSearch | Columnar (Parquet + DuckLake) |
 | Custom, hardly maintainable | Standard tools & formats |
 | Data **pushed** by `DataStore` clients | Data **pulled** (extracted) from OLTP |
 | Scalability not at today's level | Designed for current scale |
@@ -698,11 +700,17 @@ title: rejected
 
 :: content ::
 
+- Develop our own solution: the market has plenty of solutions from which to choose from 
+- Keep trying with an OpenSearch-based approach: we opened issues but got no reactions
 - Use **ClickHouse** (an open-source column oriented DBMS) as it'd be a new service
 - ELT **extraction** with a log-based CDC (*Change Data Capture*)
   - Linked to the OLTP solution (MySQL `binlog`, Oracle `redo log`, etc.)
   - perceived as an added complication
   - we do not need milli-second precision
+- Use [Grafana-duckDB plugin](https://github.com/motherduckdb/grafana-duckdb-datasource)
+  - not officially suppoted by Grafana
+  - requires specific Grafana images
+  - scalability concerns
 
 
 ---
@@ -724,11 +732,31 @@ title: summary
 :: right ::
 
 - We are proposing a solution for a **Full replacement** of DIRAC Accounting & Monitoring systems
-- **Standard stack**: Parquet + S3 + DuckLake + DuckDB. No added dependencies
+- **Standard stack**: Parquet + S3 + DuckLake + DuckDB.
 - **Pull-based** ingestion from OLTP via incremental queries
 - **Two access modes**: direct (power users) and API-mediated (everyone else)
 - **Zero new external dependencies** for core DiracX
-- **Migration path** for existing data is straightforward
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: next
+---
+
+:: title ::
+
+# What's next
+
+:: content ::
+
+In this workshop:
+- Come and discuss this afternoon after the coffee break
+
+Later on:
+- write down an ADR, and start implementation when approved
+
 
 ---
 layout: credits
