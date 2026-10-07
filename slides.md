@@ -479,10 +479,9 @@ flowchart LR
 </div>
 
 <div class="flex justify-center items-center gap-8 mt-4">
-  <logos:grafana class="text-3xl" />
-  <logos:duckdb class="text-3xl" />
-  <logos:postgresql class="text-3xl" />
-  <logos:amazons3 class="text-3xl" />
+  <img src="/images/grafana.svg" class="h-10" alt="Grafana">
+  <img src="/images/duckdb.svg" class="h-10" alt="DuckDB">
+  <img src="/images/ducklake.svg" class="h-10" alt="DuckLake">
 </div>
 
 ---
