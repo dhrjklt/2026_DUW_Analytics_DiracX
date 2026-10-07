@@ -503,20 +503,63 @@ title: visualizations
 
 
 ---
-layout: top-title
+layout: top-title-two-cols
 color: diracx-light
-align: cm
+align: cm-lm-lm
 title: visualization-arch-power
+columns: is-6
 ---
 
 :: title ::
 
 # Visualization Architecture for power users
 
-:: content ::
+:: left ::
 
+Power users can **query DuckLake directly** – raw or bucketed data, no API in between.
+
+- **Direct DuckDB access** – install `duckdb` and `ATTACH` the DuckLake
+- **Any visualization tool** – Matplotlib, Plotly, Altair, DuckDB CLI, or whatever you prefer
+- **Notebooks** – [Jupyter](https://jupyter.org) or [Marimo](https://marimo.io) for interactive exploration
+- **Raw + bucketed data** – query any granularity, run ad-hoc aggregations
+
+:: right ::
+
+<div class="mermaid" style="transform: scale(0.85); transform-origin: top center; margin-bottom: 1rem;">
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px', 'primaryColor': '#fff', 'primaryTextColor': '#333', 'primaryBorderColor': '#00afca', 'lineColor': '#00afca', 'secondaryColor': '#f5f9fa', 'tertiaryColor': '#fff'}}}%%
+flowchart LR
+    classDef user fill:#FFF3E0,stroke:#F46800,stroke-width:2px
+    classDef storage fill:#E3F2FD,stroke:#77b52c,stroke-width:2px
+
+    subgraph PowerUser["Power User Laptop"]
+        direction TB
+        Notebook[Notebook\nJupyter / Marimo]
+        Client[DuckDB Client\nPython / CLI / R]
+    end
+
+    subgraph DuckLake["DuckLake"]
+        direction TB
+        PG[(PostgreSQL\ncatalog)]
+        S3[(S3\nparquet)]
+    end
+
+    Notebook --> Client
+    Client -->|duckdb| DuckLake
+
+    class PowerUser user
+    class DuckLake storage
+```
+
+</div>
+
+<AdmonitionType type='note' >
+No Friction: power users don't need DiracX running at all – just DuckDB + network access to the catalog and S3.
+</AdmonitionType>
 
 ---
+layout: top-title
 layout: top-title
 color: diracx-light
 align: cm
