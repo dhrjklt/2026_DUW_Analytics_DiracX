@@ -299,7 +299,7 @@ title: tech-stack
 
 | Technology | Role |
 |------------|------|
-| **[Parquet](https://parquet.apache.org)** | Columnar file format; efficient compression and fast analytical queries |
+| <span class="i-simple-icons:apacheparquet text-xl align-middle inline-block"></span> **[Parquet](https://parquet.apache.org)** | Columnar file format; efficient compression and fast analytical queries |
 | <span class="i-simple-icons:amazons3 text-xl align-middle inline-block"></span> **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
 | <span class="i-simple-icons:duckdb text-xl align-middle inline-block"></span> **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
 | **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a <span class="i-logos:postgresql text-lg align-middle inline-block"></span> PostgreSQL catalog |
