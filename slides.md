@@ -429,11 +429,11 @@ title: visualization-arch
 
 :: content ::
 
-<div class="mermaid" style="transform: scale(1.15); transform-origin: top left; margin-bottom: 1.5rem;">
+<div class="mermaid" style="transform: scale(1); transform-origin: top left; margin-bottom: 1.5rem;">
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px', 'primaryColor': '#fff', 'primaryTextColor': '#333', 'primaryBorderColor': '#00afca', 'lineColor': '#00afca', 'secondaryColor': '#f5f9fa', 'tertiaryColor': '#fff'}}}%%
-flowchart LR
+flowchart LR 
     classDef grafana fill:#FFF3E0,stroke:#F46800,stroke-width:2px
     classDef backend fill:#E8F5E9,stroke:#00afca,stroke-width:2px
     classDef storage fill:#E3F2FD,stroke:#77b52c,stroke-width:2px
@@ -479,9 +479,10 @@ flowchart LR
 </div>
 
 <div class="flex justify-center items-center gap-8 mt-4">
-  <img src="/public/images/grafana-icon.svg" class="h-12" alt="Grafana">
-  <img src="/public/images/duckdb-logo.svg" class="h-12" alt="DuckDB">
-  <img src="/public/images/ducklake-logo.svg" class="h-12" alt="DuckLake">
+  <logos:grafana class="text-3xl" />
+  <logos:duckdb class="text-3xl" />
+  <logos:postgresql class="text-3xl" />
+  <logos:amazons3 class="text-3xl" />
 </div>
 
 ---
