@@ -392,24 +392,39 @@ title: ducklake
 
 :: content ::
 
+<img src="https://ducklake.select/images/logo/DuckLake_Logo-horizontal.svg" class="h-16 mx-auto mb-4" alt="DuckLake Logo">
+
 A lakehouse format built on SQL – delivers advanced data lake features without traditional lakehouse complexity.
 
 **Key features:**
 
-- **SQL as lakehouse format** – metadata stored in a SQL catalog (PostgreSQL, SQLite, DuckDB). No custom catalog server required
+- **SQL as lakehouse format** – metadata stored in a SQL catalog (PostgreSQL). No custom catalog server required
 - **ACID transactions** – concurrent access with full transactional guarantees over multi-table operations
 - **Snapshots & time travel** – query data as of any point in time, without expensive compaction steps
 - **Schema evolution & partitioning** – adapt tables over time without breaking existing queries
 - **Open Parquet storage** – data lives in plain Parquet files on disk or object storage, compatible with Iceberg
 - **Fast queries** – filter pushdown via column statistics, even on large datasets
 
-**Production-ready** (v1.0 released April 2026), MIT-licensed, developed by the DuckDB Foundation.
-
 <AdmonitionType type='important' >
 DuckLake enables a <strong>"multiplayer DuckDB"</strong> experience – multiple instances can read and write the same dataset concurrently, a concurrency model <em>not</em> supported by vanilla DuckDB.
 </AdmonitionType>
 
 
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: ducklake-deployment
+---
+
+:: title ::
+
+# DuckLake Deployment
+
+:: content ::
+
+S3, also explain about postgres
 
 
 ---
