@@ -105,7 +105,7 @@ columns: is-9
 :: left ::
 
 
-**OTEL** – <simple-icons:opentelemetry class="text-lg align-middle inline-block" /> [OpenTelemetry](https://opentelemetry.io)
+**OTEL** – <span class="i-simple-icons:opentelemetry text-lg align-middle inline-block"></span> [OpenTelemetry](https://opentelemetry.io)
 - Instrumentation standard for traces, metrics, logs.
   - Also [being added in DiracX](https://github.com/DIRACGrid/diracx/pull/1056)
 - This is *not* the main subject of this presentation
@@ -300,9 +300,9 @@ title: tech-stack
 | Technology | Role |
 |------------|------|
 | **[Parquet](https://parquet.apache.org)** | Columnar file format; efficient compression and fast analytical queries |
-| <simple-icons:amazons3 class="text-xl align-middle inline-block" /> **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
-| <simple-icons:duckdb class="text-xl align-middle inline-block" /> **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
-| **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a <logos:postgresql class="text-lg align-middle inline-block" /> PostgreSQL catalog |
+| <span class="i-simple-icons:amazons3 text-xl align-middle inline-block"></span> **[S3](https://aws.amazon.com/s3/)** *(already a DiracX requirement)* | Scalable, durable object storage for parquet files |
+| <span class="i-simple-icons:duckdb text-xl align-middle inline-block"></span> **[DuckDB](https://duckdb.org)** | In-process analytics engine; also handles data bucketing |
+| **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a <span class="i-logos:postgresql text-lg align-middle inline-block"></span> PostgreSQL catalog |
 
 ---
 layout: top-title
@@ -321,9 +321,9 @@ We can always load "old" accounting data by **dump-and-restore**. The real quest
 
 **4 main approaches considered:**
 
-1. **CDC (Change Data Capture)** – e.g., `pymysqlreplication` on <logos:mysql class="text-lg align-middle inline-block" /> MySQL binlog → *considered a burden*
+1. **CDC (Change Data Capture)** – e.g., `pymysqlreplication` on <span class="i-logos:mysql text-lg align-middle inline-block"></span> MySQL binlog → *considered a burden*
 2. **Replication stream technologies** – e.g., [sling CLI](https://github.com/slingdata-io/sling-cli) with MySQL + DuckLake connectors
-3. <logos:mysql class="text-lg align-middle inline-block" /> **MySQL triggers** (counters) polled by DiracX tasks
+3. <span class="i-logos:mysql text-lg align-middle inline-block"></span> **MySQL triggers** (counters) polled by DiracX tasks
 4. **Incremental queries** (every 1-2 min) → `SELECT * WHERE LastUpdateTime > ?`
 
 <AdmonitionType type='important' >
@@ -479,11 +479,11 @@ flowchart LR
 </div>
 
 <div class="flex justify-center items-center gap-8 mt-4">
-  <logos:grafana class="text-3xl" />
-  <simple-icons:duckdb class="text-3xl" />
-  <simple-icons:amazons3 class="text-3xl" />
-  <logos:postgresql class="text-3xl" />
-  <simple-icons:opentelemetry class="text-3xl" />
+  <span class="i-logos:grafana text-3xl"></span>
+  <span class="i-simple-icons:duckdb text-3xl"></span>
+  <span class="i-simple-icons:amazons3 text-3xl"></span>
+  <span class="i-logos:postgresql text-3xl"></span>
+  <span class="i-simple-icons:opentelemetry text-3xl"></span>
 </div>
 
 ---
@@ -533,15 +533,15 @@ title: frontend-decision
 
 :: content ::
 
-**<logos:grafana class="text-xl align-middle inline-block" /> Grafana + Infinity data source plugin**
+**<span class="i-logos:grafana text-xl align-middle inline-block"></span> Grafana + Infinity data source plugin**
 
 Given that we expose a REST API via FastAPI, the [Infinity data source plugin](https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource) is a strong candidate:
 
 | Component | Responsibility |
 | --- | --- |
 | **FastAPI Backend** | Validates user tokens, applies row-level/tenant security, queries DuckLake, returns JSON arrays |
-| <logos:grafana class="text-lg align-middle inline-block" /> **Grafana Infinity** | HTTP client inside Grafana; connects to FastAPI with secure, forwarded OAuth headers |
-| <logos:grafana class="text-lg align-middle inline-block" /> **Grafana Panels** | Uses UQL or JSONata within Infinity to transform JSON into tables, time series, or charts |
+| <span class="i-logos:grafana text-lg align-middle inline-block"></span> **Grafana Infinity** | HTTP client inside Grafana; connects to FastAPI with secure, forwarded OAuth headers |
+| <span class="i-logos:grafana text-lg align-middle inline-block"></span> **Grafana Panels** | Uses UQL or JSONata within Infinity to transform JSON into tables, time series, or charts |
 
 <AdmonitionType type='note' >
 Infinity connects to any HTTP/JSON endpoint, making it a natural fit for our FastAPI analytics route.
@@ -626,7 +626,7 @@ In pure technology stack terms, DiracX OLAP would **share nothing** with the exi
 
 | **DIRAC Accounting** | **DiracX OLAP** |
 |------------------|-------------|
-| <logos:mysql class="text-lg align-middle inline-block" /> MySQL, <logos:opensearch class="text-lg align-middle inline-block" /> OpenSearch | Columnar (Parquet + DuckLake) |
+| <span class="i-logos:mysql text-lg align-middle inline-block"></span> MySQL, <span class="i-logos:opensearch text-lg align-middle inline-block"></span> OpenSearch | Columnar (Parquet + DuckLake) |
 | Custom, hardly maintainable | Standard tools & formats |
 | Data **pushed** by `DataStore` clients | Data **pulled** (extracted) from OLTP |
 | Scalability not at today's level | Designed for current scale |

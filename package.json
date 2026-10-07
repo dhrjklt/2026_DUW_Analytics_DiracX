@@ -23,7 +23,13 @@
   "homepage": "https://github.com/fstagni/2026_DUW_Analytics_DiracX#readme",
   "description": "",
   "dependencies": {
-    "slidev-theme-neversink": "^0.4.0"
+    "@iconify-json/devicon": "^1.2.68",
+    "@iconify-json/devicon-plain": "^1.2.61",
+    "@iconify-json/logos": "^1.2.15",
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/simple-icons": "^1.2.99",
+    "slidev-theme-neversink": "^0.4.0",
+    "unplugin-icons": "^24.0.0"
   },
   "devDependencies": {
     "@slidev/cli": "^52.9.1"
