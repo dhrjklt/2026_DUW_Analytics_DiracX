@@ -91,24 +91,25 @@ The DIRAC Accounting and Monitoring Systems "resembles" a Data Warehouse
 
 
 ---
-layout: top-title
+layout: top-title-two-cols
 color: diracx-light
-align: cm
+align: cm-lm-lm
 title: terminology-oltp-3
+columns: is-9
 ---
 
 :: title ::
 
 # Terminology: Industry-Standard Terms/3
 
-:: content ::
+:: left ::
 
 
 **OTEL** – [OpenTelemetry](https://opentelemetry.io)
-- Instrumentation standard for traces, metrics, logs. Also being added in DiracX.
+- Instrumentation standard for traces, metrics, logs.
+  - Also [being added in DiracX](https://github.com/DIRACGrid/diracx/pull/1056)
 - This is *not* the main subject of this presentation
 
-<br>
 
 <AdmonitionType type='important' >
 <strong>OLAP vs OTEL</strong><br>
@@ -123,11 +124,18 @@ title: terminology-oltp-3
 They serve different purposes and should not be mixed.
 </AdmonitionType>
 
-<br>
 
 <AdmonitionType type='note' >
 The "telemetry" that has been added <a href="https://dirac.diracgrid.org/en/integration/AdministratorGuide/Systems/MonitoringSystem/index.html#monitoring-of-dirac-agents-and-services" class="slidev-link">in DIRAC</a> won't be ported, and should probably be discontinued already.
 </AdmonitionType>
+
+
+:: right ::
+
+
+<SpeechBubble color="sky" shape="round" maxWidth="300px" position="l">
+Your installation <strong>can</strong> leave without OTEL, not without an OLAP
+</SpeechBubble>
 
 
 ---
@@ -364,7 +372,7 @@ title: bucketing-strategy
 
 :: content ::
 
-Raw records are landed as **Parquet** (the source of truth); time-bucketed, pre-aggregated tables are **derived** by DuckDB inside DuckLake.
+Raw records are stored in **Parquet** (the source of truth); time-bucketed, pre-aggregated tables are **derived** by DuckDB inside DuckLake.
 
 | Concern | Approach |
 |---------|----------|
@@ -421,42 +429,59 @@ title: visualization-arch
 
 :: content ::
 
-<br>
-
-
-<div class="mermaid" style="transform: scale(1.05); transform-origin: top left; margin-bottom: 1.5rem;">
+<div class="mermaid" style="transform: scale(1.15); transform-origin: top left; margin-bottom: 1.5rem;">
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px', 'primaryColor': '#fff', 'primaryTextColor': '#333', 'primaryBorderColor': '#00afca', 'lineColor': '#00afca', 'secondaryColor': '#f5f9fa', 'tertiaryColor': '#fff'}}}%%
 flowchart LR
-    subgraph Grafana
+    classDef grafana fill:#FFF3E0,stroke:#F46800,stroke-width:2px
+    classDef backend fill:#E8F5E9,stroke:#00afca,stroke-width:2px
+    classDef storage fill:#E3F2FD,stroke:#77b52c,stroke-width:2px
+    classDef panel fill:#fff,stroke:#ccc,stroke-width:1px,stroke-dasharray:3 3
+
+    P1[Panel 1]:::panel
+    P2[Panel 2]:::panel
+    PN[Panel N]:::panel
+
+    subgraph Grafana["Grafana"]
+        direction TB
         Infinity[Infinity Plugin]
-        P1[Panel 1]
-        P2[Panel 2]
-        PN[Panel N]
+        P1
+        P2
+        PN
     end
 
-    subgraph Backend
-        subgraph Analytics API
-            Auth[1. Authenticate]
-            Filter[2. Inject VO filters]
-            Query[3. Query DuckLake]
-            Ret[4. Return JSON]
-        end
+    subgraph Backend["Analytics API"]
+        direction TB
+        Auth[1. Authenticate]
+        Filter[2. Inject VO filters]
+        Query[3. Query DuckLake]
+        Ret[4. Return JSON]
     end
 
-    subgraph DuckLake
-        PG[PostgreSQL\ncatalog]
-        S3[S3\nparquet]
+    subgraph DuckLake["DuckLake"]
+        direction TB
+        PG[(PostgreSQL\ncatalog)]
+        S3[(S3\nparquet)]
     end
 
-    Grafana --> |HTTP + OAuth| Backend
-    Backend --> |duckdb| DuckLake
-    P1 --> Infinity
-    P2 --> Infinity
-    PN --> Infinity
+    Grafana -->|"HTTP + OAuth"| Backend
+    Backend -->|duckdb| DuckLake
+    P1 -.-> Infinity
+    P2 -.-> Infinity
+    PN -.-> Infinity
+
+    class Grafana grafana
+    class Backend backend
+    class DuckLake storage
 ```
 
+</div>
+
+<div class="flex justify-center items-center gap-8 mt-4">
+  <img src="/public/images/grafana-icon.svg" class="h-12" alt="Grafana">
+  <img src="/public/images/duckdb-logo.svg" class="h-12" alt="DuckDB">
+  <img src="/public/images/ducklake-logo.svg" class="h-12" alt="DuckLake">
 </div>
 
 ---
@@ -534,6 +559,9 @@ title: security
 :: content ::
 
 To **query the lakehouse directly**, direct access is needed – this is for **power users only**.
+
+
+<br>
 
 For everyone else:
 - **Short-lived credentials** provided by the FastAPI analytics endpoint
@@ -670,8 +698,12 @@ title: rejected
 
 :: content ::
 
-- Use ClickHouse, as it'd be a new service
-- ETL with a real CDC (e.g. from MySQL binlog), too complex, and we do not need milli-second precision
+- Use **ClickHouse** (an open-source column oriented DBMS) as it'd be a new service
+- ELT **extraction** with a log-based CDC (*Change Data Capture*)
+  - Linked to the OLTP solution (MySQL `binlog`, Oracle `redo log`, etc.)
+  - perceived as an added complication
+  - we do not need milli-second precision
+
 
 ---
 layout: top-title-two-cols
@@ -691,8 +723,8 @@ title: summary
 
 :: right ::
 
-- **Full replacement** of DIRAC Accounting & Monitoring
-- **Standard stack**: Parquet + S3 + DuckLake + DuckDB
+- We are proposing a solution for a **Full replacement** of DIRAC Accounting & Monitoring systems
+- **Standard stack**: Parquet + S3 + DuckLake + DuckDB. No added dependencies
 - **Pull-based** ingestion from OLTP via incremental queries
 - **Two access modes**: direct (power users) and API-mediated (everyone else)
 - **Zero new external dependencies** for core DiracX
