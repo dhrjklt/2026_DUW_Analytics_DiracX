@@ -388,15 +388,9 @@ title: ducklake
 
 :: title ::
 
-# DuckLake
-
-:: content ::
-
 <img src="https://ducklake.select/images/logo/DuckLake_Logo-horizontal.svg" class="h-16 mx-auto mb-4" alt="DuckLake Logo">
 
-A lakehouse format built on SQL – delivers advanced data lake features without traditional lakehouse complexity.
-
-**Key features:**
+:: content ::
 
 - **SQL as lakehouse format** – metadata stored in a SQL catalog (PostgreSQL). No custom catalog server required
 - **ACID transactions** – concurrent access with full transactional guarantees over multi-table operations
@@ -507,7 +501,7 @@ layout: top-title-two-cols
 color: diracx-light
 align: cm-lm-lm
 title: visualization-arch-power
-columns: is-6
+columns: is-5
 ---
 
 :: title ::
@@ -525,7 +519,7 @@ Power users can **query DuckLake directly** – raw or bucketed data, no API in 
 
 :: right ::
 
-<div class="mermaid" style="transform: scale(0.85); transform-origin: top center; margin-bottom: 1rem;">
+<div class="mermaid" style="transform: scale(1.05); transform-origin: top center; margin-bottom: 1rem;">
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px', 'primaryColor': '#fff', 'primaryTextColor': '#333', 'primaryBorderColor': '#00afca', 'lineColor': '#00afca', 'secondaryColor': '#f5f9fa', 'tertiaryColor': '#fff'}}}%%
@@ -559,24 +553,37 @@ No Friction: power users don't need DiracX running at all – just DuckDB + netw
 </AdmonitionType>
 
 ---
-layout: top-title
-layout: top-title
+layout: top-title-two-cols
 color: diracx-light
-align: cm
+align: cm-lm-lm
 title: visualization-arch-users
+columns: is-5
 ---
 
 :: title ::
 
 # <span class="i-logos:grafana text-3xl align-middle inline-block"></span> Visualization Architecture for generic users
 
-:: content ::
+:: left ::
 
-<div class="mermaid" style="transform: scale(1); transform-origin: top left; margin-bottom: 1.5rem;">
+Generic users interact with **pre-built Grafana dashboards** – no direct database access needed.
+
+- **Grafana + Infinity plugin** – connects to a DiracX analytics endpoint
+- **OAuth passthrough** – user tokens are forwarded, VO/tenant filters applied server-side
+- **Zero dependencies** – users only need a browser
+
+
+<AdmonitionType type='note' >
+Users see only their own data – VO and tenant scoping is enforced by the DiracX API, not by the dashboard configuration.
+</AdmonitionType>
+
+:: right ::
+
+<div class="mermaid" style="transform: scale(0.9); transform-origin: top center; margin-bottom: 1rem;">
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px', 'primaryColor': '#fff', 'primaryTextColor': '#333', 'primaryBorderColor': '#00afca', 'lineColor': '#00afca', 'secondaryColor': '#f5f9fa', 'tertiaryColor': '#fff'}}}%%
-flowchart LR 
+flowchart TB 
     classDef grafana fill:#FFF3E0,stroke:#F46800,stroke-width:2px
     classDef backend fill:#E8F5E9,stroke:#00afca,stroke-width:2px
     classDef storage fill:#E3F2FD,stroke:#77b52c,stroke-width:2px
@@ -620,15 +627,6 @@ flowchart LR
 ```
 
 </div>
-
-<!--
-<div class="flex justify-center items-center gap-8 mt-4">
-  <span class="i-logos:grafana text-3xl"></span>
-  <span class="i-simple-icons:duckdb text-3xl"></span>
-  <span class="i-simple-icons:amazons3 text-3xl"></span>
-  <span class="i-logos:postgresql text-3xl"></span>
-</div>
--->
 
 ---
 layout: top-title
@@ -796,31 +794,7 @@ title: migration
 - **Old monitoring data** (OpenSearch) – similarly ingestable (raw data need not go back to the beginning of time)
 - **Dump-and-restore** for historical data
 - **Incremental queries** for near real-time ingestion
-
----
-layout: top-title
-color: diracx-light
-align: cm
-title: qa
----
-
-:: title ::
-
-# Q&A
-
-:: content ::
-
-**Why DuckDB?**
-- Mature software, **zero dependencies**
-
-**Do I really need S3?**
-- Technically no (data can stay on disk), but **not advised**
-
-**What about current accounting data?**
-- Raw "type" tables have never been removed – can be ingested
-
-**What about current monitoring data?**
-- Similarly ingestable (raw data shouldn't go back to beginning of time)
+- the legacy DIRAC systems and the new Analytics platform can (should) co-exist
 
 ---
 layout: section
@@ -844,16 +818,16 @@ title: rejected
 
 :: content ::
 
-- Develop our own solution: the market has plenty of solutions from which to choose from 
-- Keep trying with an OpenSearch-based approach: we opened issues but got no reactions
+- Develop **our own solution**: the market has plenty of solutions from which to choose from 
+- Keep trying with an **OpenSearch-based approach**: we opened issues but got no reactions
 - Use **ClickHouse** (an open-source column oriented DBMS) as it'd be a new service
-- ELT **extraction** with a log-based CDC (*Change Data Capture*)
+- ELT **extraction with a log-based CDC** (*Change Data Capture*)
   - Linked to the OLTP solution (MySQL `binlog`, Oracle `redo log`, etc.)
   - perceived as an added complication
   - we do not need milli-second precision
 - Use [Grafana-duckDB plugin](https://github.com/motherduckdb/grafana-duckdb-datasource)
-  - not officially suppoted by Grafana
-  - requires specific Grafana images
+  - not officially supported by Grafana
+  - requires specific images
   - scalability concerns
 
 
@@ -871,7 +845,10 @@ title: summary
 
 :: left ::
 
-<img src="/public/images/diracx-logo-square.svg" class="mx-auto w-3/5 diracx-logo"> </img>
+<div class="flex justify-center items-center gap-4">
+  <img src="/public/images/diracx-logo-square.svg" class="w-1/5 diracx-logo"> </img>
+  <span class="i-simple-icons:duckdb text-5xl"></span>
+</div>
 
 :: right ::
 
@@ -897,6 +874,7 @@ title: next
 
 In this workshop:
 - Come and discuss this afternoon after the coffee break
+- We can also show you a PoC
 
 Later on:
 - write down an ADR, and start implementation when approved
