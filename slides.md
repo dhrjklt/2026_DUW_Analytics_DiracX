@@ -19,7 +19,7 @@ download: true
 
 <br>
 
-13–16 October 2026, FZU Prague
+The 12th Dirac(X) Users' workshop -- 13–16 October 2026, FZU Prague
 
 <a href="https://indico.cern.ch/event/1588323/" class="ns-c-iconlink"><mdi-open-in-new />indico.cern.ch/event/1588323</a>
 
@@ -151,11 +151,18 @@ title: scope
 
 :: content ::
 
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
 <div class="flex flex-col items-center justify-center h-full text-center">
 
 This note proposes a **comprehensive approach for creating an OLAP for DiracX**.
 
-Its purpose is to **fully replace** the current DIRAC "Accounting" and "Monitoring" systems.
+Its purpose is to, at a minimum, **fully replace** the current DIRAC "Accounting" and "Monitoring" systems.
 
 </div>
 
@@ -189,8 +196,7 @@ color: diracx
 title: User Stories
 ---
 
-# User Stories
-
+# Requirements
 
 
 ---
@@ -206,10 +212,10 @@ title: users
 
 :: content ::
 
-- Community users
-- Community operators
-- Community administrators
-- Dirac(X) admins
+- Community users (members of a VO that do not hold specific rights)
+- Community operators ("shifters" or whoever is in charge of, e.g., submitting/managing workgraphs)
+- Community administrators (VO admins, computing coordinators, etc.)
+- Dirac(X) admins (administrators of an installation)
 
 
 ---
@@ -228,33 +234,98 @@ title: user-stories
 | **As a...** | **I want to...** | **So that...** |
 |---------|-------------|------------|
 | Community user | Visualize my own usage through dashboards | |
-| Community operator (shifter) | Do real-time community monitoring | I can provide feedback |
-| Community operator (shifter) | Visualize historic data | I can provide community reports |
-| Community administrator | Modify the dashboards definitions | |
-| Community administrator | Explore raw and bucketed data | I can create new visualizations |
-| Community administrator | Inject community-specific data in the OLAP | |
+
+Users should normally be able to only see their own activities.
+
+<br>
+
+| **As a...** | **I want to...** | **So that...** |
+|---------|-------------|------------|
+| Community operator | Do real-time community monitoring | I can provide feedback |
+| Community operator | Visualize historic data | I can provide community reports |
+
+Operators should be able to see activities of every user inside their VO
 
 
 ---
 layout: top-title
 color: diracx-light
 align: cm
-title: user-stories
+title: user-stories2
 ---
 
 :: title ::
 
-# User Stories
+# User Stories /2
 
 :: content ::
 
+| **As a...** | **I want to...** | **So that...** |
+|---------|-------------|------------|
+| Community administrator | Explore raw and bucketed data | I can create all visualizations I need |
+| Community administrator | Modify the dashboards definitions (consumed e.g. by the operators) | |
 
-The new analytics should have (at a minimum) <strong>all the data</strong> of the existing (legacy) DIRAC accounting.
+Community administrators should be able to access all the recorded information about the VO they administer.
+
+<br>
 
 | **As a...** | **I want to...** | **So that...** |
 |---------|-------------|------------|
 | DiracX admin | Avoid any new external dependency | |
 | DiracX admin | Visualize every community data, and summing them up | I can create plots per-installation |
+
+
+---
+layout: top-title
+color: diracx-light
+align: cm
+title: additional
+---
+
+:: title ::
+
+# Additional requirements
+
+:: content :: 
+
+- VOs should be able to **load** community-specific data in the OLAP from a Dirac(X) extension.
+- It should be possible to **load** and **read/transform** data to/from the OLAP from outside Dirac(X)
+- The OLTP should not be only MySQL.
+- The new analytics should have (at a minimum) <strong>all the data</strong> of the existing (legacy) DIRAC accounting.
+- Pre-built dashboard definitions should be likely persisted in the code.
+- Building blocks should be taken as much as possible off the shelf
+
+
+
+---
+layout: top-title-two-cols
+color: diracx-light
+align: cm-lm-lm
+title: sources
+columns: is-8
+---
+
+:: title ::
+
+# Examples of what we want to store in the OLAP
+
+:: left ::
+
+- (for preserving the history) everything that is currently in DIRAC accounting
+- everything that keeps being added to the current DIRAC accounting
+- (for preserving the history) everything that is currently in DIRAC monitoring
+- everything that keeps being added to the current DIRAC monitoring
+- analytics data for MP jobs (new)
+- TransformationSystem counters
+- (LHCb) bookkeeping statistics
+- (Belle2) ...?
+- ...
+
+:: right ::
+
+<AdmonitionType type='note' >
+There might be different ways of <strong>Extraction</strong> (from the OLTP) and <strong>Loading</strong> (into the OLAP). 
+</AdmonitionType>
 
 ---
 layout: section
@@ -278,7 +349,7 @@ title: architecture
 :: content ::
 
 - Raw data for analytics is **extracted** from the OLTP sources
-  - In vast majority of the cases this would be MySQL
+  - In most of cases this would be MySQL
   - Other sources can include OpenSearch, but also OpenTelemetry or your system of choice (e.g. an Oracle with data of choice)
 - Raw data is loaded into a **columnar DB format**
 - Data is stored using a **"lakehouse"** organization
@@ -305,6 +376,11 @@ title: tech-stack
 | **[DuckLake](https://ducklake.select)** | Lakehouse layer: organizes parquet files with a <span class="i-logos:postgresql text-lg align-middle inline-block"></span> PostgreSQL catalog |
 | <span class="i-logos:grafana text-xl align-middle inline-block"></span> **[Grafana](https://grafana.com)** | Dashboards & visualizations via Infinity plugin |
 
+<br>
+
+<AdmonitionType type='important' >
+There are alternatives for each of these building blocks
+</AdmonitionType>
 
 ---
 layout: section
@@ -313,6 +389,7 @@ title: ETL
 ---
 
 # Extracting the data (the E in ELT)
+
 
 ---
 layout: top-title
@@ -336,9 +413,7 @@ We can always load "old" accounting data by **dump-and-restore**. The real quest
 3. <span class="i-logos:mysql text-lg align-middle inline-block"></span> **MySQL triggers** (counters) polled by DiracX tasks
 4. **Incremental queries** (every 1-2 min) → `SELECT * WHERE LastUpdateTime > ?`
 
-<AdmonitionType type='important' >
-<strong>19th June 2026:</strong> Approach #4 (incremental queries) looks like the most generically suitable option
-</AdmonitionType>
+Approach #4 (incremental queries) looks like the most generically suitable option
 
 ---
 layout: top-title
@@ -388,7 +463,8 @@ title: ducklake
 
 :: title ::
 
-<img src="https://ducklake.select/images/logo/DuckLake_Logo-horizontal.svg" class="h-16 mx-auto mb-4" alt="DuckLake Logo">
+<center><img src="/public/images/DuckLake_Logo-horizontal.svg" alt="drawing" width="200"/></center>
+
 
 :: content ::
 
