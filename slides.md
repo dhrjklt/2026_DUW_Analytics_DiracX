@@ -482,19 +482,77 @@ DuckLake enables a <strong>"multiplayer DuckDB"</strong> experience – multiple
 
 
 ---
-layout: top-title
+layout: top-title-two-cols
 color: diracx-light
-align: cm
+align: cm-lm-lm
 title: ducklake-deployment
+columns: is-5
 ---
 
 :: title ::
 
 # DuckLake Deployment
 
-:: content ::
+:: left ::
 
-S3, also explain about postgres
+Three pieces — only two are deployed services.
+
+- **PostgreSQL** — catalog only (schemas, snapshots, file lists); **no analytical rows**. [DuckLake's recommended choice](https://ducklake.select/docs/stable/duckdb/usage/choosing_a_catalog_database); MySQL has connector issues, SQLite is single-writer.
+- **S3** — the data: raw + bucketed Parquet. Already a DiracX requirement.
+- **DuckDB** — not a server: each writer/reader `ATTACH`es the catalog.
+
+<AdmonitionType type='note' >
+Filesystem instead of S3 works, but is not advised.
+</AdmonitionType>
+
+:: right ::
+
+<div class="mermaid" style="transform: scale(0.92); transform-origin: top center; margin-bottom: 1rem;">
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '13px', 'primaryColor': '#fff', 'primaryTextColor': '#333', 'primaryBorderColor': '#00afca', 'lineColor': '#00afca', 'secondaryColor': '#f5f9fa', 'tertiaryColor': '#fff'}}}%%
+flowchart TB
+    classDef oltp fill:#FFF3E0,stroke:#F46800,stroke-width:2px
+    classDef compute fill:#E8F5E9,stroke:#00afca,stroke-width:2px
+    classDef catalog fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px
+    classDef storage fill:#E3F2FD,stroke:#77b52c,stroke-width:2px
+
+    OLTP[(OLTP\nMySQL / journal)]:::oltp
+
+    subgraph Writers["DiracX tasks · DuckDB"]
+        direction TB
+        Ingest[Incremental extract]
+        Bucket[Bucketing job]
+    end
+
+    subgraph Lake["DuckLake"]
+        direction TB
+        PG[(PostgreSQL\ncatalog only)]
+        S3[(S3\nParquet)]
+    end
+
+    subgraph Readers["Readers · DuckDB"]
+        direction TB
+        API[Analytics API\nper request]
+        Power[Power user\nlaptop]
+    end
+
+    OLTP --> Ingest
+    Ingest -->|metadata| PG
+    Ingest -->|files| S3
+    Bucket -->|metadata| PG
+    Bucket -->|files| S3
+    API -->|ATTACH| PG
+    API -->|read| S3
+    Power -->|ATTACH| PG
+    Power -->|read| S3
+
+    class Writers,Readers compute
+    class PG catalog
+    class S3 storage
+```
+
+</div>
 
 
 ---
