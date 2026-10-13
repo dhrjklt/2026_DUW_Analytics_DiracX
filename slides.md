@@ -563,6 +563,7 @@ flowchart TB
         direction TB
         API[Analytics API\nper request]
         Power[Power user\nlaptop]
+        MCP[diracx-mcp]
     end
 
     OLTP --> Ingest
@@ -574,6 +575,8 @@ flowchart TB
     API -->|read| S3
     Power -->|ATTACH| PG
     Power -->|read| S3
+    MCP -->|ATTACH| PG
+    MCP -->|read| S3
 
     class Writers,Readers compute
     class PG catalog
@@ -634,6 +637,8 @@ title: duckdb-time-series
 
 DuckDB's SQL dialect goes far beyond basic `GROUP BY` for time-series workloads:
 
+<div class="duckdb-ts">
+
 | Feature | What it does | Example use |
 |---|---|---|
 | **`time_bucket()`** | Truncates timestamps to any interval | `time_bucket('1 day', SubmissionTime)` |
@@ -642,6 +647,8 @@ DuckDB's SQL dialect goes far beyond basic `GROUP BY` for time-series workloads:
 | **`generate_series()`** | Create continuous date ranges | Fill gaps in sparse data with zero-count days |
 | **`QUALIFY`** | Filter on window results without subqueries | `QUALIFY ROW_NUMBER() OVER (PARTITION BY Site ORDER BY bucket DESC) <= 1` |
 | **`SUMMARIZE`** | Instant column statistics on raw parquet | Quick exploration before writing queries |
+
+</div>
 
 <AdmonitionType type='note' >
 All of this runs <strong>in-process</strong> — no server to deploy. Each reader gets a full DuckDB engine.
@@ -1036,6 +1043,8 @@ title: rejected
 
 :: content ::
 
+<div class="compact-list">
+
 - Develop **our own solution**: the market has plenty of solutions from which to choose from 
 - Keep trying with an **OpenSearch-based approach**: we opened issues but got no reactions
 - Use **ClickHouse** (an open-source column oriented DBMS) as it'd be a new service
@@ -1047,6 +1056,8 @@ title: rejected
   - not officially supported by Grafana
   - requires specific images
   - scalability concerns
+
+</div>
 
 
 ---
