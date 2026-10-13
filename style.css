@@ -121,3 +121,20 @@
 .mermaid .node rect {
   stroke-width: 2px;
 }
+
+/* Keep the dense DuckDB time-series feature table within the slide bounds */
+.duckdb-ts table {
+  font-size: 0.85em;
+}
+
+.duckdb-ts td,
+.duckdb-ts th {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Tighten long bullet lists so they stay within the slide bounds */
+.compact-list li {
+  margin-bottom: 0.5em;
+  line-height: 1.4em;
+}
