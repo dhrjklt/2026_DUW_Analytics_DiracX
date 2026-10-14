@@ -406,13 +406,13 @@ title: data-ingestion
 
 We can always load "old" accounting data by **dump-and-restore**. The real question is **(near) real-time monitoring**.
 
-<strong>The extraction method depends on how each OLTP writes its data.</strong> There is no one-size-fits-all.
+<strong>The extraction method depends on how each OLTP writes its data.</strong> There is **no one-size-fits-all**.
 
 **4 main approaches considered:**
 
 1. **CDC (Change Data Capture)** – e.g., `pymysqlreplication` on <span class="i-logos:mysql text-lg align-middle inline-block"></span> MySQL binlog → *considered a burden*
 2. **Replication stream technologies** – e.g., [sling CLI](https://github.com/slingdata-io/sling-cli) with MySQL + DuckLake connectors
-3. <span class="i-logos:mysql text-lg align-middle inline-block"></span> **MySQL triggers** (counters) polled by DiracX tasks
+3. <span class="i-logos:mysql text-lg align-middle inline-block"></span> Counters polled by DiracX tasks
 4. **Incremental queries** (every 1-2 min) → `SELECT * WHERE LastUpdateTime > ?`
 
 Approach #4 (incremental queries) looks like the most generically suitable option, but the actual mechanism varies per source.
